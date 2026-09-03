@@ -347,10 +347,11 @@ async function ensureAdmin() {
   if (Number(rows[0].c) > 0) return;
   const password = process.env.DASH_ADMIN_PASSWORD || randomBytes(12).toString('base64url');
   const hash = await bcrypt.hash(password, 10);
-  await pool.query('INSERT INTO operators (name, pass_hash) VALUES (?, ?)', ['talbergh', hash]);
+  const adminName = process.env.OMS_ADMIN || process.env.DASH_ADMIN || 'admin';
+  await pool.query('INSERT INTO operators (name, pass_hash) VALUES (?, ?)', [adminName, hash]);
   console.log('==============================================');
   console.log('Initial admin operator created:');
-  console.log('  name:     talbergh');
+  console.log(`  name:     ${adminName}`);
   console.log(`  password: ${password}`);
   console.log('  (password shown only here, not stored in chat)');
   console.log('==============================================');

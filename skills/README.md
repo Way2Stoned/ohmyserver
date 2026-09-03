@@ -1,6 +1,6 @@
-# OhMyServer - Skillset für talbergh.art
+# OhMyServer - Skillset for <domain>
 
-Übersicht aller Skills für den Server **talbergh.art** (User: talbergh).
+Overview of all Skills for the server **<domain>** (User: <user>).
 
 > **Gemeinsame Standards** für alle Skills: siehe [`_STANDARD.md`](_STANDARD.md)
 > (kompakter Output, ask-Menüs, Operator-Login, .ssa-Pflicht, Command-Safety).
@@ -253,16 +253,16 @@
 └── scripts/          # Hilfs-Scripts
 ```
 
-## Nutzung
+## Usage
 
-Skills werden automatisch geladen bei passenden Triggers. Manuell:
+Skills are loaded automatically on matching triggers. Manually:
 ```
-Lade den ohmyserver-security Skill
+Load the ohmyserver-security Skill
 ```
 
-## WICHTIG
+## IMPORTANT
 
-- **Security-Änderungen**: IMMER erst fragen
-- **Destruktive Aktionen** (Restore, Service-Stop, Reboot): IMMER Bestätigung
-- **Bei Unsicherheit**: Lieber fragen als handeln
-- **Kein AI-Slop**: Antworten kurz, sachlich, mit Quellen
+- **Security Changes**: ALWAYS ask first
+- **Destructive Actions** (Restore, Service-Stop, Reboot): ALWAYS require confirmation
+- **When Uncertain**: Better to ask than act
+- **No AI-Slop**: Answers short, factual, with sources

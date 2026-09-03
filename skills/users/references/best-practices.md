@@ -1,57 +1,57 @@
 # User & Permission Best Practices (Linux Server)
 
-Zusammenfassung der Community-Standard-Härtung für User/Rechte-Verwaltung.
+Summary of Community Standard Hardening for User/Rights Management.
 
-## 1. Least Privilege (Minimal-Rechte)
+## 1. Least Privilege (Minimal Rights)
 
-**Regel**: Jeder User bekommt NUR die Rechte die er wirklich braucht.
+**Rule**: Every User Gets ONLY the Rights They Actually Need.
 
-- **Nur der Owner** hat vollen sudo
-- Andere User bekommen **spezifische** Rechte, nicht vollen Admin
-- Service-Accounts haben **keine** interaktive Login-Shell
+- **Only the Owner** Has Full Sudo
+- Other Users Get **Specific** Rights, Not Full Admin
+- Service Accounts Have **No** Interactive Login Shell
 
 ```bash
-# Statt vollem sudo:
-sudo usermod -aG sudo user   # ❌ zu viel
+# Instead of Full Sudo:
+sudo usermod -aG sudo user   # ❌ Too Much
 
-# Spezifische Rechte (besser):
+# Specific Rights (Better):
 echo 'user ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart nginx' | sudo tee /etc/sudoers.d/user
 ```
 
-## 2. SSH-Sicherheit (KRITISCH)
+## 2. SSH Security (CRITICAL)
 
 ```bash
-# /etc/ssh/sshd_config - Gehärtete Empfehlung:
-PermitRootLogin no               # Kein Root-Login
-PasswordAuthentication no        # Nur SSH-Keys
+# /etc/ssh/sshd_config - Hardened Recommendation:
+PermitRootLogin no               # No Root Login
+PasswordAuthentication no        # Only SSH Keys
 PubkeyAuthentication yes
-AllowUsers talbergh              # Nur erlaubte User
-MaxAuthTries 3                   # Max 3 Versuche
+AllowUsers <user>                # Only Allowed Users
+MaxAuthTries 3                   # Max 3 Attempts
 ```
 
-> **IMMER** `sshd -t` testen BEVOR Reload, sonst lockout!
+> **ALWAYS** `sshd -t` Test BEFORE Reload, Otherwise Lockout!
 > ```bash
 > sudo sshd -t && sudo systemctl reload sshd
 > ```
 
-## 3. Passwort- & Account-Sicherheit
+## 3. Password & Account Security
 
 ```bash
-# Account-Sperre bei Fehlversuchen (fail2ban oder pam_faillock)
+# Account Lock on Failed Attempts (fail2ban or pam_faillock)
 sudo apt install fail2ban
 
-# Passwort-Ablauf setzen (für normale User)
-sudo chage -M 90 benutzer   # alle 90 Tage ändern
+# Set Password Expiry (for Normal Users)
+sudo chage -M 90 user   # Change Every 90 Days
 
-# Expired-Account-Untersuchung
-sudo chage -l benutzer
+# Expired Account Investigation
+sudo chage -l user
 ```
 
-## 4. Benutzer-Anlage (sicher)
+## 4. User Creation (Secure)
 
 ```bash
-# Sicher: mit beschreibung, ssh-key statt passwort
-sudo useradd -m -s /bin/bash -c "Web-App Betreiber" web
+# Secure: With Description, SSH Key Instead of Password
+sudo useradd -m -s /bin/bash -c "Web App Operator" web
 sudo mkdir -p /home/web/.ssh
 sudo tee /home/web/.ssh/authorized_keys >/dev/null <<'EOF'
 ssh-rsa AAAA... user@host
@@ -61,78 +61,78 @@ sudo chmod 700 /home/web/.ssh
 sudo chmod 600 /home/web/.ssh/authorized_keys
 ```
 
-## 5. Service-Accounts (Datei-Zugriffe)
+## 5. Service Accounts (File Access)
 
-- **Keine Shell**: `/usr/sbin/nologin`
-- **Nur benötigte Dateirechte**
+- **No Shell**: `/usr/sbin/nologin`
+- **Only Required File Rights**
 
 ```bash
 sudo useradd -r -s /usr/sbin/nologin app-service
 ```
 
-## 6. Detektions-Checks (regelmäßig via UPA)
+## 6. Detection Checks (Regular via UPA)
 
 ```bash
-# 1. User mit UID 0 (sollte NUR root sein)
+# 1. Users with UID 0 (Should ONLY Be Root)
 awk -F: '$3 == 0 {print $1}' /etc/passwd
 
-# 2. Leere Passwörter (KRITISCH!)
+# 2. Empty Passwords (CRITICAL!)
 sudo awk -F: '($2 == "") {print $1}' /etc/shadow
 
-# 3. User mit Login-Shell
+# 3. Users with Login Shell
 grep -E "/(bash|sh|zsh)$" /etc/passwd
 
-# 4. Sudo-Mitglieder
+# 4. Sudo Members
 getent group sudo
 
-# 5. Ungenutzte Accounts (30+ Tage kein Login)
+# 5. Unused Accounts (30+ Days No Login)
 last -n 30 | awk '{print $1}' | sort -u
 ```
 
-## 7. Sudoer-Härtung
+## 7. Sudo Hardening
 
 ```bash
-# defaults - Passwort-Auth für sudo (sicher)
-# Defaults EXISTIERT bereits, nicht schwächen mit NOPASSWD (außer spezifisch)
+# defaults - Password Auth for Sudo (Secure)
+# Defaults ALREADY EXISTS, Don't Weaken with NOPASSWD (Except Specific)
 
-# visudo nutzen (NIE direkt nano)
+# Use visudo (NEVER Direct nano)
 sudo visudo
 
-# Nur EIN Admin in sudo Group
+# Only ONE Admin in Sudo Group
 ```
 
-## 8. Datei-Permissions (Dienste)
+## 8. File Permissions (Services)
 
-| Verzeichnis | Besitzer | Perms | Zweck |
-|-------------|----------|-------|-------|
-| /home/*/ | user | 700/750 | Persönliche Daten |
-| /root/ | root | 700 | Root-Daten |
-| /etc/shadow | root | 640 | Passwort-Hashes |
-| /etc/ssh/sshd_config | root | 600 | SSH-Konfig |
+| Directory | Owner | Perms | Purpose |
+|-----------|-------|-------|---------|
+| /home/*/ | user | 700/750 | Personal Data |
+| /root/ | root | 700 | Root Data |
+| /etc/shadow | root | 640 | Password Hashes |
+| /etc/ssh/sshd_config | root | 600 | SSH Config |
 | ~/.ssh/ | user | 700 | SSH |
-| ~/.ssh/authorized_keys | user | 600 | SSH-Keys |
+| ~/.ssh/authorized_keys | user | 600 | SSH Keys |
 
-## 9. Außer Betrieb genommene Accounts
+## 9. Decommissioned Accounts
 
-- **Deaktivieren** statt löschen (auditbar):
+- **Disable** Instead of Delete (Auditable):
 ```bash
-sudo usermod -L user   # lock (deaktiviert)
+sudo usermod -L user   # Lock (Disable)
 sudo usermod -s /usr/sbin/nologin user
 ```
-- Nach Standzeit: dokumentieren in users.md + ggf. löschen (fragen!)
+- After Stand Time: Document in users.md + Maybe Delete (Ask!)
 
-## 10. Was NIE tun
+## 10. What NEVER To Do
 
-- ❌ Passwort in Klartext ablegen / in Cron
+- ❌ Store Password in Plaintext / in Cron
 - ❌ `PermitRootLogin yes` + `PasswordAuthentication yes`
-- ❌ Vollen sudo an Nicht-Admin geben
-- ❌ Service-Account mit `/bin/bash`
-- ❌ authorized_keys mit Gruppe/Außenwelt lesbar (600!)
+- ❌ Full Sudo to Non-Admin
+- ❌ Service Account with `/bin/bash`
+- ❌ authorized_keys Readable by Group/Outside (600!)
 
-## WICHTIG (Zusammenfassung)
-1. **Least Privilege**: nur nötige Rechte
-2. **SSH-Keys** statt Passwort-Login
-3. **Root-Login aus**
-4. **users.md pflegen** bei jeder Änderung
-5. **Backup** passwd/shadow/sudoers vor Änderung
-6. **visudo** nutzen, nie direkt editieren
+## 11. IMPORTANT (Summary)
+1. **Least Privilege**: Only Necessary Rights
+2. **SSH Keys** Instead of Password Login
+3. **Root Login Off**
+4. **Maintain users.md** On Every Change
+5. **Backup** passwd/shadow/sudoers Before Change
+6. **Use visudo**, Never Direct Edit

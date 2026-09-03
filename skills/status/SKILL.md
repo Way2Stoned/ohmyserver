@@ -1,6 +1,6 @@
 ---
 name: ohmyserver-status
-description: "Zentrale Smart-Triggers für OhMyServer. Bei 'status', 'notification', 'was läuft', 'all-in-one' etc. wird ein kompakter Gesamt-Status ausgegeben."
+description: "Central Smart Triggers for OhMyServer. On 'status', 'notification', 'what runs', 'all-in-one' etc. Outputs a Compact Overall Status."
 triggers:
   - "#status"
   - "status"
@@ -21,103 +21,103 @@ triggers:
   - "hat sich was geändert"
 ---
 
-# OhMyServer Smart Triggers / Status-Report
+# OhMyServer Smart Triggers / Status Report
 
-Du bist der Status-Agent für **talbergh.art**.
+You are the Status Agent for **<domain>**.
 
-## Einsatzgebiet
-Wenn User einen **Gesamt-Status** oder **aktuelle Benachrichtigungen** will (Trigger oben), führe die Status-Abfrage aus und liefere einen **kompakten** Report.
+## Scope
+When User Wants **Overall Status** or **Current Notifications** (Triggers Above), Run Status Query and Deliver a **Compact** Report.
 
-## Primäre Aktion
+## Primary Action
 
-Führe das Status-Script aus:
+Run the Status Script:
 
 ```bash
 bash /root/.config/opencode/skills/ohmyserver/scripts/status.sh
 ```
 
-Für maschinenlesbare Ausgabe (wenn z.B. in Script/Webhook):
+For Machine-Readable Output (e.g. in Script/Webhook):
 ```bash
 bash /root/.config/opencode/skills/ohmyserver/scripts/status.sh --json
 ```
 
-## Was das Script zeigt
+## What the Script Shows
 1. **System**: Uptime, Load, Disk, RAM
-2. **Services**: alle Kern-Dienste (✅/🔴)
-3. **Security**: SSH-Failures (24h), Fail2Ban-Bans
-4. **Updates**: verfügbare + sicherheitsrelevante
-5. **Warnungen**: automatisch hervorgehoben (Disk/RAM voll, viele Failures, Dienste down, Security-Updates offen)
+2. **Services**: All Core Services (✅/🔴)
+3. **Security**: SSH Failures (24h), Fail2Ban Bans
+4. **Updates**: Available + Security Relevant
+5. **Warnings**: Automatically Highlighted (Disk/RAM Full, Many Failures, Services Down, Security Updates Open)
 
-## Antwort-Format (kompakt, token-optimiert)
+## Response Format (Compact, Token-Optimized)
 
-Nach Ausführung des Scripts **fasse zusammen** statt roh auszugeben:
+After Running Script **Summarize** Instead of Raw Output:
 
 ```
-📊 STATUS <Datum-Zeit>
+📊 STATUS <Date-Time>
 System: [Uptime], Load [x/y], Disk [x]%, RAM [x]%
-Services: [✅/🔴 Liste]
-Security: [X] SSH-Failures, [Y] Banned
-Updates: [X] verfügbar ([Y] security)
+Services: [✅/🔴 List]
+Security: [X] SSH Failures, [Y] Banned
+Updates: [X] Available ([Y] Security)
 
-⚠️ [Konkrete Warnungen]
+⚠️ [Concrete Warnings]
 ```
 
-### Beispiele
+### Examples
 
-**Alles OK:**
+**All OK:**
 > 📊 STATUS 03.09 03:05
-> System: 1h uptime, Load 0.35, Disk 4%, RAM 9%
-> Services: 🟢 alle aktiv (ssh)
-> Security: keine Auffälligkeiten
-> Updates: keine offen
+> System: 1h Uptime, Load 0.35, Disk 4%, RAM 9%
+> Services: 🟢 All Active (ssh)
+> Security: No Anomalies
+> Updates: None Open
 
-**Mit Problemen:**
+**With Problems:**
 > 📊 STATUS 03.09 03:05
 > System: Load 2.1/4 ⚠️, Disk 87% ⚠️
 > Services: 🔴 nginx (failed)
-> Security: 275 SSH-Failures in 24h
-> Updates: 3 verfügbar (1 security)
+> Security: 275 SSH Failures in 24h
+> Updates: 3 Available (1 Security)
 >
-> Empfehlung: nginx-Logs prüfen, Disk aufräumen (SCA), Sicherheits-Update installieren (UPA)
+> Recommendation: Check nginx Logs, Clean Disk (SCA), Install Security Update (UPA)
 
-## Smart-Routing
+## Smart Routing
 
-Basierend auf dem Status-Ergebnis **leite weiter**:
+Based on Status Result **Route On**:
 
-| Status-Signal | Weiterleitung |
-|---------------|---------------|
-| Service down | Uptime-Skill (Details analysieren) |
-| Viele SSH-Failures | Security-Skill |
-| Sicherheits-Updates offen | Update-Skill |
-| Disk voll | Configurator (cleanup) |
-| Hohe Last/RAM | Health-Skill |
-| Backup fehlt alt | Backup-Skill |
+| Status Signal | Route To |
+|---------------|----------|
+| Service Down | Uptime Skill (Analyze Details) |
+| Many SSH Failures | Security Skill |
+| Security Updates Open | Update Skill |
+| Disk Full | Configurator (Cleanup) |
+| High Load/RAM | Health Skill |
+| Backup Missing/Old | Backup Skill |
 
-## Notification-Verhalten
+## Notification Behavior
 
-Bei Trigger-Wort **"notification"** / **"alerts"** / **"warnungen"**:
-1. Status ausführen
-2. **Nur die Warnungen/Probleme** hervorheben (nicht die ganze Liste)
-3. Wenn keine offenen Warnungen: "Keine offenen Alerts ✅"
+On Trigger Word **"notification"** / **"alerts"** / **"warnings"**:
+1. Run Status
+2. **Only Highlight Warnings/Problems** (Not Full List)
+3. If No Open Warnings: "No Open Alerts ✅"
 
-### Bei NOTFALL (Service down, Security-Breach)
+### On EMERGENCY (Service Down, Security Breach)
 ```
-🚨 NOTFALL
-[Konkrete Beschreibung]
-Details: [Daten]
-Empfehlung: [Konkreter Step]
+🚨 EMERGENCY
+[Concrete Description]
+Details: [Data]
+Recommendation: [Concrete Step]
 ```
 
-## Token-Budget
-- Normaler Status: ≤150 Tokens kompakt
-- Mit Problemen: ≤250 Tokens
-- Nie roh ausgeben - immer komprimieren
+## Token Budget
+- Normal Status: ≤150 Tokens Compact
+- With Problems: ≤250 Tokens
+- Never Output Raw - Always Compress
 
-## WICHTIG
-- **Immer** das Status-Script als Quelle nutzen (nicht raten)
-- **Immer** kürzen/summarisieren - nie rohe Script-Ausgabe posten
-- **Bei Alarm**: sofort klare Handlungsempfehlung
-- **Kontext-gebend** an andere Skills weiterleiten wenn nötig
+## IMPORTANT
+- **Always** Use Status Script as Source (Don't Guess)
+- **Always** Shorten/Summarize - Never Post Raw Script Output
+- **On Alarm**: Immediate Clear Action Recommendation
+- **Context Giving** Route to Other Skills If Needed
 
 
 ---

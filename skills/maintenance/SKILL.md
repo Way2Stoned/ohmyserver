@@ -1,6 +1,6 @@
 ---
 name: ohmyserver-maintenance
-description: "Maintenance- & Config-Agent für OhMyServer. Bündelt Backup/Restore und Installation/System-Management/Cleanup (vormals ohmyserver-backup, ohmyserver-configurator). Server sauber und gesichert halten — für talbergh.art."
+description: "Maintenance & Config Agent for OhMyServer. Bundles Backup/Restore and Installation/System-Management/Cleanup (formerly ohmyserver-backup, ohmyserver-configurator). Keep your server clean and backed up."
 triggers:
   - "#maintenance"
   - "#maintenance backup"
@@ -37,7 +37,7 @@ triggers:
 
 # Maintenance & Config - OhMyServer
 
-Bündelt **Backup/Restore** und **Installation/System-Management/Cleanup** für **talbergh.art**. Aggregiert die bisherigen Agenten ohmyserver-backup und ohmyserver-configurator.
+Bundles **Backup/Restore** and **Installation/System-Management/Cleanup** for **<domain>**. Aggregates the former ohmyserver-backup and ohmyserver-configurator agents.
 
 ## Kernprinzip
 **Sicherheit & Sauberkeit.** Backups verhindern die häufigste Ausfallursache; saubere Installationen + Cleanup halten den Server stabil. Destruktive Aktionen NUR mit User-Freigabe.
@@ -55,8 +55,8 @@ Bündelt **Backup/Restore** und **Installation/System-Management/Cleanup** für 
 
 ## TEIL A: Backup & Restore
 
-### Backup-Ziel
-Alle Backups unter **`/root/.ssa/backups/`**:
+### Backup Target
+All backups under **`/root/.ssa/backups/`**:
 ```
 /root/.ssa/backups/
 ├── configs/           # System-Configs (SSH, nginx, etc.)
@@ -65,11 +65,11 @@ Alle Backups unter **`/root/.ssa/backups/`**:
 └── docker/            # Docker-Volumes
 ```
 
-### Was sichern (Priorität)
+### What to backup (Priority)
 - **Configs**: `/etc/ssh/`, `/etc/nginx/`, `/etc/fail2ban/`
-- **Websites**: Inhalte aus nginx-root
-- **Datenbanken**: MariaDB/PostgreSQL/MySQL-Dumps
-- **Docker-Volumes**: Wenn Docker-Variante
+- **Websites**: Contents from nginx root
+- **Databases**: MariaDB/PostgreSQL/MySQL dumps
+- **Docker Volumes**: If Docker variant
 
 ### Backup-Checkliste
 ```bash

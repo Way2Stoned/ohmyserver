@@ -11,7 +11,12 @@ set -euo pipefail
 MARIADB_USER="ohmyserver"
 MARIADB_DB="ohmyserver"
 CRED_FILE="${CRED_FILE:-$HOME/.ssa/credentials/mariadb-ohmyserver.txt}"
-OPERATOR_NAME="${OPERATOR_NAME:-talbergh}"
+
+# Operator-Name aus Env/server.json/OS-User (max. portabel)
+if [ -z "${OPERATOR_NAME:-}" ] && [ -f "$HOME/.ssa/server.json" ]; then
+  OPERATOR_NAME="$(grep -o '"user"[^,]*' "$HOME/.ssa/server.json" 2>/dev/null | head -1 | sed 's/.*: *"//; s/"//')"
+fi
+OPERATOR_NAME="${OPERATOR_NAME:-$USER}"
 
 [ -f "$CRED_FILE" ] || { echo "✗ Keine Credentials: $CRED_FILE"; exit 1; }
 PASS=$(awk -F': ' '/^password:/{print $2}' "$CRED_FILE")

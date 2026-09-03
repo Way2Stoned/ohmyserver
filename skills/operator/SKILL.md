@@ -1,6 +1,6 @@
 ---
 name: ohmyserver-operator
-description: "Operator- & Session-Modul für OhMyServer. Verwaltet Operator-Login/Logout, Trigger-Wörter, Memory und .ssa-Updates für talbergh.art."
+description: "Operator & Session Module for OhMyServer. Manages Operator Login/Logout, Trigger Words, Memory and .ssa Updates for your server."
 triggers:
   - "#operator"
   - "#operator login"
@@ -18,27 +18,27 @@ triggers:
   - "session"
 ---
 
-# Operator & Session-Modul - OhMyServer
+# Operator & Session Module - OhMyServer
 
-Zentrales Modul für **Operator-Verwaltung**, **Trigger-Wörter**, **Memory** und **.ssa-Protokollierung** auf **talbergh.art**.
+Central Module for **Operator Management**, **Trigger Words**, **Memory** and **.ssa Logging** on **<domain>**.
 
-## Operator-Login / Logout
+## Operator Login / Logout
 
-### Erste Nachricht (Login-Pflicht)
-- **Zustand prüfen**: Existiert `/root/.ssa/operators/active-operator.md`?
-- **Keine aktive Sitzung** → als ERSTES nach dem Operator-Namen fragen:
+### First Message (Login Required)
+- **Check State**: Does `/root/.ssa/operators/active-operator.md` Exist?
+- **No Active Session** → Ask for Operator Name FIRST:
   ```
-  👤 Operator: Bitte dein Name für die Session? (für Logs & Memory)
+  👤 Operator: Please provide your name for this session? (for Logs & Memory)
   ```
-- Nach Nennung → Sitzung starten (siehe unten)
-- Der Operator wird für die gesamte Chat-Session gemerkt
+- After Name Given → Start Session (See Below)
+- Operator Is Remembered for Entire Chat Session
 
-### Login durchführen (`#operator login <name>`)
+### Perform Login (`#operator login <name>`)
 ```
-1. Operator-Datei anlegen/aktualisieren:  /root/.ssa/operators/<name>.md
-2. Aktive Sitzung schreiben:               /root/.ssa/operators/active-operator.md
-3. Memory aktualisieren:                   /root/.ssa/operators/memory.md
-4. Kurz bestätigen (1 Zeile)
+1. Create/Update Operator File:  /root/.ssa/operators/<name>.md
+2. Write Active Session:         /root/.ssa/operators/active-operator.md
+3. Update Memory:                /root/.ssa/operators/memory.md
+4. Briefly Confirm (1 Line)
 ```
 
 ```bash
@@ -52,110 +52,131 @@ echo "<name>" > /root/.ssa/operators/active-operator.md
 ```
 
 ### Logout (`#operator logout`)
-**Pflicht**: Der Operator MUSS sich am Ende einer Task/Session mit `#operator logout` abmelden.
+**Mandatory**: Operator MUST Log Out at End of Task/Session with `#operator logout`.
 ```
-1. last_logout Zeitstempel aktualisieren
-2. active-operator.md LÖSCHEN (Sitzung beendet)
-3. Memory aktualisieren (Session-Zusammenfassung)
-4. Kompakt bestätigen + offene Punkte nennen
+1. Update last_logout Timestamp
+2. DELETE active-operator.md (Session Ended)
+3. Update Memory (Session Summary)
+4. Compact Confirm + Name Open Points
 ```
 ```bash
 rm /root/.ssa/operators/active-operator.md
 ```
 
-### Aktive Sitzung auslesen
+### Read Active Session
 ```bash
-# Wer ist eingeloggt? (leer = niemand)
+# Who Is Logged In? (Empty = Nobody)
 cat /root/.ssa/operators/active-operator.md 2>/dev/null
 ```
 
-## Trigger-Wörter
+## Trigger Words
 
-Dem Operator IMMER kompakt anzeigen, welche Trigger verfügbar sind:
+Show Operator ALL Available Triggers Compactly:
 
 ```
-⚡ Trigger: #operator login | #operator logout | #operator status | #help | #memory | #todo | <fach-trigger>
+⚡ Trigger: #operator login | #operator logout | #operator status | #help | #memory | #todo | <specialist-trigger>
 ```
 
-### Zentrale Trigger
-| Trigger | Aktion |
+### Central Triggers
+| Trigger | Action |
 |---------|--------|
-| `#operator login <name>` | Operator anmelden |
-| `#operator logout` | Abmelden + Sitzung beenden (PFLICHT am Ende) |
-| `#operator status` | Kompakter Status + offene Punkte |
-| `#help` | Alle Trigger-Wörter anzeigen |
-| `#memory` | Memory anzeigen |
-| `status`, `was läuft` | Gesamt-Status (→ ohmyserver-status) |
+| `#operator login <name>` | Log In Operator |
+| `#operator logout` | Log Out + End Session (MANDATORY at End) |
+| `#operator status` | Compact Status + Open Points |
+| `#help` | Show All Trigger Words |
+| `#memory` | Show Memory |
+| `status`, `what runs` | Overall Status (→ ohmyserver-status) |
 
-## Memory-System
+## Memory System
 
-Gespeichert in `/root/.ssa/operators/memory.md` — von JEDEM Skill gepflegt.
+Stored in `/root/.ssa/operators/memory.md` — Maintained by EVERY Skill.
 
-### Wann aktualisieren (PFLICHT nach jeder Aufgabe)
-- **Immer**: Kurzer Log-Eintrag (was gemacht, wann, Ergebnis)
-- **Bei Server-Änderungen**: Ausführliches Protokoll (was, wo, wie, vorher/nachher, Risiko)
-- **Bei Präferenzen**: Operator-Vorlieben merken (z.B. Output-Stil, Sprachen, Tools)
+### When to Update (MANDATORY After Every Task)
+- **Always**: Short Log Entry (What Done, When, Result)
+- **On Server Changes**: Detailed Protocol (What, Where, How, Before/After, Risk)
+- **On Preferences**: Remember Operator Preferences (e.g. Output Style, Languages, Tools)
 
-### memory.md Struktur
+### memory.md Structure
 ```markdown
-# Memory - talbergh.art
+# Memory - <domain>
 
-## Aktiver Operator
+## Active Operator
 - Name: <name>
-- Seit: <datum>
+- Since: <date>
 
-## Präferenzen
-- Output-Stil: kompakt (Progressbar)
-- <weitere>
+## Preferences
+- Output Style: Compact (Progressbar)
+- <More>
 
-## Session-Log (neueste oben)
-- [YYYY-MM-DD HH:MM] <was gemacht> - <Ergebnis>
+## Session Log (Newest First)
+- [YYYY-MM-DD HH:MM] <What Done> - <Result>
 
-## Offene Punkte
-- <nicht abgeschlossene Aufgaben>
+## Open Points
+- <Unfinished Tasks>
 ```
 
-## .ssa-Updates (PFLICHT nach jeder Aufgabe)
+## .ssa Updates (MANDATORY After Every Task)
 
-### Regel
-- **Immer**: `/root/.ssa/logs/<bereich>.log` um 1 Zeile ergänzen
-- **Nur bei Server-Änderungen** (Installation/Config/Rechte/Neustart): Ausführlich in `/root/.ssa/protocols/` + ggf. `reports/`
+### Rule
+- **Always**: Append 1 Line to `/root/.ssa/logs/<area>.log`
+- **Only on Server Changes** (Install/Config/Rights/Restart): Detailed in `/root/.ssa/protocols/` + Maybe `reports/`
 
-### Log-Zeile Format
+### Log Line Format
 ```
-[YYYY-MM-DD HH:MM] <operator>: <was> - <ergebnis>
+[YYYY-MM-DD HH:MM] <operator>: <what> - <result>
 ```
 
-### Protokoll (bei Server-Änderung)
-- `/root/.ssa/protocols/<bereich>-config.md` aktualisieren
-- Operator-Name in Kopfzeile + Datum
+### Protocol (On Server Change)
+- Update `/root/.ssa/protocols/<area>-config.md`
+- Operator Name in Header + Date
 
-## Kompakter Output-Stil (ALLGEMEIN für alle Skills)
+## Compact Output Style (GENERAL for All Skills)
 
-**WICHTIG**: Dieser Stil gilt für ALLE OhMyServer-Skills.
+**IMPORTANT**: This Style Applies to ALL OhMyServer Skills.
 
-- **Während der Arbeit**: Progress-artige Statuszeile, keine Fließtexte
+- **During Work**: Progress-Style Status Line, No Flowing Text
   ```
-  ⬜ [1/5] Schritt: Beschreibung
-  ✅ [1/5] Schritt: Beschreibung
+  ⬜ [1/5] Step: Description
+  ✅ [1/5] Step: Description
   ⬜ [2/5] ...
   ```
-- **Kein laufender Kommentar** — nicht erklären was du grad tust außer im Progress
-- **Nur Ergebnisse** berichten, nicht Prozesse beschreiben
-- **Am Ende**: Eine kompakte finale Zusammenfassung
+- **No Running Commentary** — Don't Explain What You're Doing Except in Progress
+- **Only Report Results**, Not Describe Processes
+- **At End**: One Compact Final Summary
   ```
-  ✅ FERTIG - <Aufgabe>
-   • <Hauptergebnis 1>
-   • <Hauptergebnis 2>
-   ⚠️ Offen: <falls was offen>
+  ✅ DONE - <Task>
+   • <Main Result 1>
+   • <Main Result 2>
+   ⚠️ Open: <If Anything Open>
   ```
 
+## Operator Onboarding
+
+**When Meeting a NEW Operator** (no active session or unknown name), the agent speaks **ENGLISH FIRST** and asks:
+
+1. **Preferred Language** (English/German/Other)
+2. **Operator Name** 
+3. **Reason / Purpose** for this session
+4. **About Them** (their role/task — e.g. admin, developer, ops, etc.)
+
+After collecting, store the operator in the standard operators mechanism (`/root/.ssa/operators/<name>.md` + `active-operator.md`) and switch to the preferred language going forward.
+
+Use `question`-Tool for the language menu:
+```markdown
+question(
+  "Welcome! What is your preferred language?",
+  ["English", "Deutsch", "Other"]
+)
+```
+
+Then ask for name, reason, and role via follow-up questions.
+
 ## Hard Rules
-- **Erste Nachricht**: Immer nach Operator-Namen fragen (falls keine aktive Sitzung)
-- **`#operator logout` Pflicht** am Ende jeder Sitzung
-- **Trigger-Wörter** immer kompakt anzeigen
-- **Memory + .ssa-Log** nach jeder Aufgabe aktualisieren
-- **Komprimierter Output**, kein AI-Slop
+- **First Message**: Always Ask for Operator Name (If No Active Session)
+- **`#operator logout` Mandatory** at End of Every Session
+- **Trigger Words** Always Show Compactly
+- **Memory + .ssa Log** Update After Every Task
+- **Compact Output**, No AI-Slop
 
 
 ---

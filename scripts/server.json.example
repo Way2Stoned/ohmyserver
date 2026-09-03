@@ -1,0 +1,13 @@
+{
+  "server_name": "myserver",
+  "user": "admin",
+  "domain": "example.com",
+  "purpose": "web",
+  "admin": "admin@example.com",
+  "install_dir": "/root/ohmyserver-repo",
+  "ssa_dir": "/root/.ssa",
+  "language": "en",
+  "with_db": false,
+  "created_iso": "2026-01-15T10:30:00Z",
+  "updated_iso": "2026-01-15T10:30:00Z"
+}

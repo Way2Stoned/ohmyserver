@@ -1,0 +1,69 @@
+{
+  "name": "ohmyserver",
+  "version": "1.0.0",
+  "description": "Modular OpenCode addon for server management: 20+ specialized skills (security, config, backup, database, monitoring, vault, supervisor, dashboard), unified #command system, on-demand memory, encrypted secrets vault, session-bound web dashboard, and server config layer replacing hardcoding.",
+  "author": "Way2Stoned",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/<owner>/ohmyserver.git"
+  },
+  "requires": {
+    "opencode": ">=1.0.0"
+  },
+  "entrypoints": {
+    "install": "install.sh",
+    "init": "scripts/ohmyserver-init.sh",
+    "uninstall": "scripts/uninstall.sh",
+    "verify": "scripts/verify-all.sh",
+    "status": "scripts/status.sh",
+    "dashboard": "dashboard/dashboard-ctl.sh"
+  },
+  "docs": {
+    "index": "docs/README.md",
+    "install": "docs/INSTALL.md",
+    "architecture": "docs/ARCHITECTURE.md",
+    "security": "docs/SECURITY.md",
+    "dashboard": "docs/DASHBOARD.md",
+    "development": "docs/DEVELOPMENT.md"
+  },
+  "language": "en",
+  "keywords": [
+    "opencode",
+    "addon",
+    "server-management",
+    "skills",
+    "ai-agents",
+    "dashboard",
+    "vault",
+    "monitoring",
+    "backup",
+    "security"
+  ],
+  "scripts": {
+    "install": "bash install.sh",
+    "init": "bash scripts/ohmyserver-init.sh",
+    "verify": "bash scripts/verify-all.sh",
+    "status": "bash scripts/status.sh --json",
+    "dashboard:start": "bash dashboard/dashboard-ctl.sh start",
+    "dashboard:stop": "bash dashboard/dashboard-ctl.sh stop",
+    "uninstall": "bash scripts/uninstall.sh"
+  },
+  "config": {
+    "server_json": "~/.ssa/server.json",
+    "credentials_dir": "~/.ssa/credentials/",
+    "runtime_dir": "~/.ssa/",
+    "skills_dir": "~/.config/opencode/skills/ohmyserver/"
+  },
+  "ohmyserver": {
+    "skills_count": 20,
+    "command_prefix": "#",
+    "dashboard_port": 8787,
+    "dashboard_host": "127.0.0.1",
+    "mariadb_database": "ohmyserver",
+    "mariadb_user": "ohmyserver",
+    "jwt_expiry_hours": 12,
+    "vault_algorithm": "AES-256 (MariaDB AES_ENCRYPT)",
+    "master_key_location": "~/.ssa/credentials/vault-master.key"
+  }
+}

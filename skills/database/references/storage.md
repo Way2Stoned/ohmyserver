@@ -1,37 +1,37 @@
-# Storage-Management für talbergh.art
+# Storage Management for <domain>
 
-## Kern-Befehle
+## Core Commands
 
-### Festplatten-Nutzung
+### Disk Usage
 ```bash
-# Übersicht aller Mounts
+# Overview All Mounts
 df -h
 
-# Inodes (wichtig! Dateien können voll sein obwohl Platz da ist)
+# Inodes (Important! Files Can Be Full Despite Free Space)
 df -i
 
-# Größte Verzeichnisse finden
+# Largest Directories
 du -h --max-depth=1 / | sort -hr | head -15
 
-# Größte Dateien finden
+# Largest Files
 find / -type f -size +100M 2>/dev/null | head -20
 ```
 
-### Mounts & Partitionen
+### Mounts & Partitions
 ```bash
-# Alle Block-Geräte
+# All Block Devices
 lsblk
 
 # Mounts
 mount | column -t
 
-# Partitions-Tabellen
+# Partition Tables
 sudo fdisk -l
 ```
 
-### LVM (falls genutzt)
+### LVM (If Used)
 ```bash
-# Physische Volumes
+# Physical Volumes
 sudo pvs
 
 # Volume Groups
@@ -40,84 +40,84 @@ sudo vgs
 # Logical Volumes
 sudo lvs
 
-# LVM erweitern (ANAT - kein Platz mehr!)
+# Extend LVM (ANAT - No More Space!)
 sudo lvextend -L +10G /dev/vg/root
 sudo resize2fs /dev/vg/root
 ```
 
-## Storage-Health
+## Storage Health
 
-### SMART (Hardware-Diagnose)
+### SMART (Hardware Diagnosis)
 ```bash
-# SMART-Status (falls SSD/HDD)
-sudo smartctl -a /dev/sda  # Pfad anpassen
+# SMART Status (If SSD/HDD)
+sudo smartctl -a /dev/sda  # Adjust Path
 
-# Kurztest
+# Short Test
 sudo smartctl -t short /dev/sda
 
-# Ergebnis
+# Result
 sudo smartctl -l selftest /dev/sda
 ```
 
-**WICHTIG**: Meldet User sofort wenn SMART Fehler zeigt - das ist ein Frühlkill-Fall!
+**IMPORTANT**: Alert User Immediately If SMART Shows Errors - That's an Early Kill Case!
 
-### RAID (falls genutzt)
+### RAID (If Used)
 ```bash
-# RAID-Status
+# RAID Status
 cat /proc/mdstat
 
-# Detail-Info
-sudo mdadm --detail /dev/md0  # Pfad anpassen
+# Detail Info
+sudo mdadm --detail /dev/md0  # Adjust Path
 ```
 
-## Storage-Intern
+## Storage Internals
 
-### Temp-Dateien
+### Temp Files
 ```bash
-# Temp-Cleanup (bei Platzmangel)
+# Temp Cleanup (When Low Space)
 sudo find /tmp -type f -atime +7 -delete 2>/dev/null
 
-# Journal (systemd-Logs) rotieren
+# Journal (systemd Logs) Rotate
 sudo journalctl --vacuum-time=7d
 ```
 
-### SQLite-Dateien effizient nutzen
+### Use SQLite Files Efficiently
 ```bash
-# SQLite WAL aktivieren (weniger I/O)
+# Enable SQLite WAL (Less I/O)
 sqlite3 db.sqlite "PRAGMA journal_mode=WAL;"
 ```
 
-## Backup-Speicher-Prüfung
+## Backup Storage Check
 
 ```bash
-# Backup-Disk überwachen
+# Monitor Backup Disk
 df -h /root/.ssa
 
-# Alte Backups prüfen (Löschen nur mit Freigabe)
+# Check Old Backups (Delete Only With Approval)
 ls -lh /root/.ssa/backups/
 ```
 
-## Empfehlungs-Muster bei Platzmangel
+## Recommendation Pattern on Low Space
 
 ```
-💾 STORAGE-WARNUNG
-Disk: [X]/[Y] belegt ([Z]%)
-Inodes: [X]/[Y] belegt
+💾 STORAGE WARNING
+Disk: [X]/[Y] Used ([Z]%)
+Inodes: [X]/[Y] Used
 
-Größte Verzeichnisse:
-- [Größe] [Pfad]
-- [Größe] [Pfad]
+Largest Directories:
+- [Size] [Path]
+- [Size] [Path]
 
-Vorschlag:
-1. [Aktion] - spart [Größe]
-2. [Aktion] - spart [Größe]
+Proposal:
+1. [Action] - Saves [Size]
+2. [Action] - Saves [Size]
 
-Soll ich ausführen?
+Should I Execute?
 ```
 
-## WICHTIG
-- **Niemals** Dateien löschen ohne Freigabe (außer klar temp)
-- **Niemals** LVM erweitern ohne Freigabe (kann Mounts beeinflussen)
-- **Niemals** SMART/RAID ignorieren - sofort melden
-- **Backup-Pflicht** vor Storage-Änderungen
-- Bei SQLite-Volumen > 2GB: MariaDB/PostgreSQL empfehlen
+## IMPORTANT
+- **Never** Delete Files Without Approval (Except Clearly Temp)
+- **Never** Extend LVM Without Approval (Can Affect Mounts)
+- **Never** Ignore SMART/RAID - Alert Immediately
+- **Backup Required** Before Storage Changes
+- For SQLite Volume > 2GB: Recommend MariaDB/PostgreSQL

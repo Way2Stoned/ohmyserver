@@ -13,22 +13,22 @@ Jeder Subagent-Aufruf MUSS diese Struktur haben:
 6. CONTEXT:        Dateipfade, bestehende Patterns, Constraints
 ```
 
-### Beispiel-Prompt (Security-Scan delegieren)
+### Example Prompt (Delegating Security Scan)
 ```
-TASK: Führe einen Security-Scan auf talbergh.art aus.
-EXPECTED OUTCOME: Report mit offenen Ports, SSH-Safety-Status, Fail2Ban-Status, verdächtigen Logs.
-REQUIRED TOOLS: bash (nur security-scan.sh + read-only Checks).
+TASK: Run a security scan on <domain>.
+EXPECTED OUTCOME: Report with open ports, SSH safety status, Fail2Ban status, suspicious logs.
+REQUIRED TOOLS: bash (only security-scan.sh + read-only checks).
 MUST DO: 
-  - Führe scripts/security-scan.sh aus
-  - Prüfe /var/log/auth.log auf Failures
-  - Nenne konkrete IPs wenn Auffälligkeiten
-  - Mache KEINERLEI Änderungen
+  - Execute scripts/security-scan.sh
+  - Check /var/log/auth.log for failures
+  - Name specific IPs if anomalies found
+  - Make NO changes
 MUST NOT DO:
-  - KEINE SSH-Config ändern
-  - KEINE Firewall-Regeln ändern
-  - KEINE Pakete installieren
-  - Nicht interaktive CLIs öffnen
-CONTEXT: Server talbergh.art, User talbergh. Security-Baseline: /root/.ssa/protocols/baseline.md
+  - NO SSH config changes
+  - NO Firewall rule changes
+  - NO package installations
+  - No interactive CLIs
+CONTEXT: Server <domain>, User <user>. Security Baseline: /root/.ssa/protocols/baseline.md
 ```
 
 ## Dispatcher-Routing-Matrix (erweitert)

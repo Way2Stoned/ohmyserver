@@ -1,6 +1,6 @@
 ---
 name: ohmyserver-monitor
-description: "Monitor- & Wartungs-Agent für OhMyServer. Bündelt Health/Performance, Uptime/Services und Update/Patching (vormals ohmyserver-health, ohmyserver-uptime, ohmyserver-updater). MELDET zuerst, heilt nie eigenmächtig — für talbergh.art."
+description: "Monitor & Maintenance Agent for OhMyServer. Bundles Health/Performance, Uptime/Services and Update/Patching (formerly ohmyserver-health, ohmyserver-uptime, ohmyserver-updater). REPORTS first, never auto-heals — for your server."
 triggers:
   - "#monitor"
   - "#monitor health"
@@ -47,9 +47,9 @@ triggers:
   - "sind updates da"
 ---
 
-# Monitor & Wartung - OhMyServer
+# Monitor & Maintenance - OhMyServer
 
-Bündelt **Health/Performance**, **Uptime/Services** und **Update/Patching** für **talbergh.art**. Aggregiert die bisherigen Agenten ohmyserver-health, ohmyserver-uptime und ohmyserver-updater.
+Bundles **Health/Performance**, **Uptime/Services** and **Update/Patching** for **<domain>**. Aggregates the former ohmyserver-health, ohmyserver-uptime and ohmyserver-updater agents.
 
 ## Kernprinzip
 **MELDEN statt Heilen.** Bei Ausfall/Überlast/Update-Bedarf: Erst prüfen, dann User informieren, erst handeln wenn User zustimmt. Sicherheit zuerst, Stabilität zweitens.

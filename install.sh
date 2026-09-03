@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# OhMyServer Install-Script (talbergh.art)
+# OhMyServer Install-Script
 # One-Liner: curl -fsSL https://raw.githubusercontent.com/<OWNER>/ohmyserver/main/install.sh | bash
 # ============================================================
 set -euo pipefail
@@ -9,7 +9,7 @@ VERSION="1.0.0"
 SKILLS_SRC="${SKILLS_SRC:-}"          # optional: überschreibt Install-Quelle (lokal oder URL)
 INSTALL_DIR="${INSTALL_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode/skills/ohmyserver}"
 SSA_DIR="${SSA_DIR:-$HOME/.ssa}"
-REPO_OWNER="${REPO_OWNER:-}"          # GitHub-Benutzername (z.B. 'talbergh')
+REPO_OWNER="${REPO_OWNER:-}"          # GitHub-Benutzername
 REPO_NAME="${REPO_NAME:-ohmyserver}"
 REPO_BRANCH="${REPO_BRANCH:-main}"
 REPO_RAW="${REPO_RAW:-https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${REPO_BRANCH}}"

@@ -1,6 +1,6 @@
 ---
 name: ohmyserver-command-safety
-description: "Command Safety & Robustness für OhMyServer. Stellt sicher dass Commands immer korrekt beendet werden, nicht hängen bleiben (stuck) und sichere Ausführung gewährleistet ist."
+description: "Command Safety & Robustness for OhMyServer. Ensures Commands Always Terminate Correctly, Don't Hang (Stuck) and Safe Execution is Guaranteed."
 triggers:
   - "command"
   - "terminal"
@@ -18,152 +18,152 @@ triggers:
 
 # Command Safety & Robustness - OhMyServer
 
-Du bist der **Command-Safety-Agent** für **talbergh.art**. Deine Aufgabe: sicherstellen dass **jeder Befehl sauber beendet** wird, **nie hängen bleibt** (stuck/timeout), und bei Problemen **kontrolliert** (nicht brutal) abgebrochen wird.
+You are the **Command-Safety-Agent** for **<domain>**. Your Task: Ensure **Every Command Completes Cleanly**, **Never Hangs** (Stuck/Timeout), and on Problems **Controlled** (Not Brutal) Abort.
 
-## GOLDENE REGEL (immer befolgen)
+## GOLDEN RULE (Always Follow)
 
-**Jeder Befehl braucht einen Rückgabe-Wert.** Wenn ein Command potenziell lange läuft, interaktiv ist oder blockieren kann, MUST du Timeout/Guard-Mechanismen anwenden.
+**Every Command Needs a Return Value.** If a Command Potentially Runs Long, Is Interactive or Can Block, You MUST Apply Timeout/Guard Mechanisms.
 
-## Command-Risikoklassen
+## Command Risk Classes
 
-| Klasse | Beispiele | Riskio | Vorgehen |
-|--------|-----------|--------|----------|
-| **Instant** | `ls`, `df -h`, `cat` | Niedrig | Normal ausführen |
-| **Kurz** | `apt list`, `systemctl status` | Niedrig | Normal, kurzer Timeout |
-| **Mittel** | `apt install`, `docker pull` | Mittel | Timeout setzen |
-| **Lang** | `apt upgrade`, `backup.sh`, `dd` | Hoch | Timeout + Verlauf prüfen |
-| **Interaktiv** | `mysql`, `psql`, `vim`, `htop` | **Sehr hoch** | **NIE direkt** - non-interaktiv machen |
-| **Hängend** | unendliche loops, `tail -f` | **Kritisch** | **IMMER** Timeout/Äquivalent |
+| Class | Examples | Risk | Approach |
+|-------|----------|------|----------|
+| **Instant** | `ls`, `df -h`, `cat` | Low | Run Normally |
+| **Short** | `apt list`, `systemctl status` | Low | Normal, Short Timeout |
+| **Medium** | `apt install`, `docker pull` | Medium | Set Timeout |
+| **Long** | `apt upgrade`, `backup.sh`, `dd` | High | Timeout + Progress Check |
+| **Interactive** | `mysql`, `psql`, `vim`, `htop` | **Very High** | **NEVER Direct** - Make Non-Interactive |
+| **Hanging** | Infinite Loops, `tail -f` | **Critical** | **ALWAYS** Timeout/Equivalent |
 
-## Timeout-Regeln (PFLICHT)
+## Timeout Rules (MANDATORY)
 
-Nutze `timeout` für alle nicht-instanten Commands. Empfohlene Werte:
+Use `timeout` for All Non-Instant Commands. Recommended Values:
 
 ```bash
-# Kurz (max 30s)
+# Short (Max 30s)
 timeout 30 apt list --upgradable 2>/dev/null
 
-# Mittel (max 60s)
+# Medium (Max 60s)
 timeout 60 apt update
 
-# Lang (max 300s = 5min) - NUR mit klarer Notwendigkeit
+# Long (Max 300s = 5min) - ONLY With Clear Necessity
 timeout 300 bash /root/.config/opencode/skills/ohmyserver/scripts/backup.sh
 ```
 
-### Grundregeln
-- **Immer** einen `timeout` setzen - niemals einen häng-baren Befehl ohne Limit starten
-- Nach Timeout: `[command]` gibt 124 zurück → das ist HANG, nicht Erfolg
-- **Zerlege** lange Operationen in eckbare Schritte statt einen Riesenschritt
+### Basic Rules
+- **Always** Set a `timeout` - Never Start a Hangable Command Without Limit
+- After Timeout: `[command]` Returns 124 → That is HANG, Not Success
+- **Break Down** Long Operations into Checkable Steps Instead of One Giant Step
 
-## Interaktive Befehle NICHT verwenden
+## Interactive Commands NOT to Use
 
 ### Problem
-Diese Befehle öffnen interaktive UIs → **hängen für immer** in automatisierten Umgebungen:
-- `mysql` (ohne `-e`), `psql` (ohne `-c`), `sqlite3` (ohne Query)
-- `vim`, `nano`, `htop`, `top` (interaktiv)
-- `less`, `more` (pager)
-- `tail -f` (follow / endlos)
+These Commands Open Interactive UIs → **Hang Forever** in Automated Environments:
+- `mysql` (Without `-e`), `psql` (Without `-c`), `sqlite3` (Without Query)
+- `vim`, `nano`, `htop`, `top` (Interactive)
+- `less`, `more` (Pager)
+- `tail -f` (Follow / Endless)
 
-### Lösungen (Immer non-interaktiv machen)
+### Solutions (Always Make Non-Interactive)
 ```bash
-# Datenbanken - Command direkt übergeben (nicht interaktiv öffnen)
+# Databases - Pass Command Directly (Don't Open Interactive)
 mysql -u root -e "SHOW DATABASES;"          # OK
-mysql -u root < /tmp/query.sql               # OK (Datei pipen)
-# NICHT:  mysql -u root                      # HÄNGT (interaktiv)
+mysql -u root < /tmp/query.sql               # OK (Pipe File)
+# NOT:  mysql -u root                        # HANGS (Interactive)
 
 psql -U postgres -d db -c "SELECT 1;"        # OK
-# NICHT:  psql -U postgres -d db             # HÄNGT
+# NOT:  psql -U postgres -d db               # HANGS
 
 sqlite3 db.sqlite "SELECT * FROM t;"         # OK
-# NICHT:  sqlite3 db.sqlite                  # HÄNGT (interaktiv)
+# NOT:  sqlite3 db.sqlite                    # HANGS (Interactive)
 
-# Pagers → head begrenzen
+# Pagers → Limit with head
 tail -n 50 /var/log/syslog                   # OK
-# NICHT:  less /var/log/syslog               # HÄNGT
+# NOT:  less /var/log/syslog                 # HANGS
 ```
 
-## Non-Blocking Guards für kommandozeile
+## Non-Blocking Guards for Command Line
 
-### `timeout` (MUSS für alles potenziell-langsames)
+### `timeout` (MUST for Everything Potentially Slow)
 ```bash
 timeout 60 <command>
 ```
 
-### `&` + `wait` für Hintergrund-Steuerung (bei bedingter Verarbeitung)
+### `&` + `wait` for Background Control (For Conditional Processing)
 ```bash
-# Starte im Hintergrund, handle unterdessen, dann aufräumen
+# Start in Background, Handle Meanwhile, Then Cleanup
 long_command > /tmp/out.log 2>&1 &
 PID=$!
-# ... anderes Zeug ...
-# Warte mit Limit, nicht endlos
+# ... Other Stuff ...
+# Wait with Limit, Not Endless
 wait $PID
 ```
 
-### Herunterfahren (graceful statt brutal)
+### Shutdown (Graceful Not Brutal)
 ```bash
-# Erst SIGTERM (graceful) senden
+# First Send SIGTERM (Graceful)
 kill -TERM $PID
-# Wenn nach 10s noch da: SIGKILL
+# If Still There After 10s: SIGKILL
 sleep 10
 kill -KILL $PID 2>/dev/null
 ```
 
-## Command-Abschluss-Verifikation
+## Command Completion Verification
 
-**Nach JEDEM Command prüfen:**
-1. **Exit-Code**: `echo $?` (0 = Erfolg, 124 = timeout, sonst Fehler)
-2. **Ausgabe**: Nicht leer / erwartet?
+**After EVERY Command Check:**
+1. **Exit Code**: `echo $?` (0 = Success, 124 = Timeout, Else Error)
+2. **Output**: Not Empty / Expected?
 
-### Abschluss-Check-Muster
+### Completion Check Pattern
 ```bash
-set -e  # Stoppe bei erstem Fehler (wenn in Script)
-# ODER pro Command:
+set -e  # Stop on First Error (If in Script)
+# OR Per Command:
 if command; then
     echo "✅ OK"
 else
-    echo "❌ FEHLGESCHLAGEN (exit $?)"
+    echo "❌ FAILED (exit $?)"
 fi
 ```
 
-## Stuck-Detection-Protokoll
+## Stuck Detection Protocol
 
-Wenn ein Command hängt:
+When a Command Hangs:
 
-### 1. Erkennen
-- Kein Output nach erwarteter Zeit
-- Timeout (124) zurückgegeben
-- Prozess läuft endlos weiter
+### 1. Detect
+- No Output After Expected Time
+- Timeout (124) Returned
+- Process Runs Endlessly
 
 ### 2. Diagnose
 ```bash
-# Läuft der Prozess? Wie lange?
+# Is Process Running? How Long?
 ps aux | grep -E "command|script" | grep -v grep
 
-# Was hält ihn? (CPU/Laufzeit)
+# What Holds It? (CPU/Runtime)
 ps -eo pid,etime,cmd | grep -E "$COMMAND" | grep -v grep
 ```
 
-### 3. Behandeln
+### 3. Handle
 ```bash
-# 1. Versuche graceful Stop (SIGTERM)
+# 1. Try Graceful Stop (SIGTERM)
 kill -TERM $PID
 
-# 2. Warte kurz
+# 2. Wait Briefly
 sleep 5
 
-# 3. Wenn noch da → SIGKILL
-kill -KILL $PID 2>/dev/null && echo "abgebrochen"
+# 3. If Still There → SIGKILL
+kill -KILL $PID 2>/dev/null && echo "Aborted"
 ```
 
-### 4. Nie doppelt starten
-- Prüfe erst ob der Prozess schon läuft (siehe oben) bevor du neu startest
-- `pgrep -f "backup.sh"` vor erneutem Start
+### 4. Never Start Twice
+- Check First if Process Already Running (See Above) Before Restarting
+- `pgrep -f "backup.sh"` Before Restart
 
-## Logging & Aufräumen
+## Logging & Cleanup
 
-- **Fehler loggen**: `/root/.ssa/logs/commands.log`
-- **Temp-Dateien** nach Ausführung löschen
-- **Hintergrund-Jobs** nach Verarbeitung beenden (`kill`, nicht offen lassen)
+- **Log Errors**: `/root/.ssa/logs/commands.log`
+- **Temp Files** Delete After Execution
+- **Background Jobs** End After Processing (`kill`, Don't Leave Open)
 
 
 ---
@@ -180,9 +180,9 @@ Dieser Skill folgt den **gemeinsamen OhMyServer-Standards** (siehe `_STANDARD.md
 7. **Command-Safety**: `timeout` nutzen, keine interaktiven CLIs offen lassen, Exit-Codes prüfen.
 8. **Keine Spekulation**: bei Änderungen Server-Realität prüfen; nie über ungeprüften Code spekulieren.
 
-## WICHTIG (Hard Rules)
-- **NIE** interaktive Befehle ohne non-interactive Variante starten
-- **NIE** einen Befehl ohne Limit/Timeout der hängen könnte
-- **IMMER** Exit-Code/externe Verifikation nach Ausführung
-- **Graceful** beenden (SIGTERM) vor SIGKILL
-- **Bei Dauer-hängenden Bewerben**: User informieren, nicht endlos warten
+## IMPORTANT (Hard Rules)
+- **NEVER** Start Interactive Commands Without Non-Interactive Variant
+- **NEVER** Run a Command Without Limit/Timeout That Could Hang
+- **ALWAYS** Check Exit Code/External Verification After Execution
+- **Graceful** Stop (SIGTERM) Before SIGKILL
+- **On Permanent Hanging Commands**: Inform User, Don't Wait Endlessly

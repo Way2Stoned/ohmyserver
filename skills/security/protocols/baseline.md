@@ -1,23 +1,23 @@
-# Server-Baseline für talbergh.art
+# Server Baseline for <domain>
 
 ## System
-- **OS**: [Aus /etc/os-release eintragen]
+- **OS**: [From /etc/os-release]
 - **Kernel**: [uname -r]
 - **SSH Port**: 22 (Standard)
-- **Hostname**: talbergh.art
+- **Hostname**: <domain>
 
-## Dienste (sollten laufen)
+## Services (Should Run)
 - ssh
-- fail2ban (wenn installiert)
-- [Weitere relevante Dienste eintragen]
+- fail2ban (If Installed)
+- [Other Relevant Services]
 
-## Backup-Routine
-- [Backup-Intervall eintragen]
-- [Backup-Ziel eintragen]
+## Backup Routine
+- [Backup Interval]
+- [Backup Target]
 
-## Letzter Security-Check
-- [Datum des letzten Checks]
+## Last Security Check
+- [Date of Last Check]
 
-## Kontakt
-- User: talbergh
-- Domain: talbergh.art
+## Contact
+- User: <user>
+- Domain: <domain>

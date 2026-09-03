@@ -8,7 +8,12 @@ MARIADB_USER="ohmyserver"
 MARIADB_DB="ohmyserver"
 CRED_FILE="${CRED_FILE:-$HOME/.ssa/credentials/mariadb-ohmyserver.txt}"
 SRC_FILE="${SRC_FILE:-$HOME/.ssa/operators/memory.md}"
-OPERATOR_NAME="${OPERATOR_NAME:-talbergh}"
+
+# Operator-Name aus Env/server.json/OS-User (max. portabel)
+if [ -z "${OPERATOR_NAME:-}" ] && [ -f "$HOME/.ssa/server.json" ]; then
+  OPERATOR_NAME="$(grep -o '"user"[^,]*' "$HOME/.ssa/server.json" 2>/dev/null | head -1 | sed 's/.*: *"//; s/"//')"
+fi
+OPERATOR_NAME="${OPERATOR_NAME:-$USER}"
 DRY_RUN=0
 [ "${1:-}" = "--dry-run" ] && DRY_RUN=1
 
