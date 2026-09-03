@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OhMyServer Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Login view -->
+  <div id="login-view" class="view hidden">
+    <div class="login-card">
+      <h1>OhMyServer</h1>
+      <p class="subtitle">Operator Dashboard</p>
+      <form id="login-form">
+        <label>Name
+          <input type="text" id="login-name" autocomplete="username" required />
+        </label>
+        <label>Passwort
+          <input type="password" id="login-password" autocomplete="current-password" required />
+        </label>
+        <button type="submit" class="btn primary">Anmelden</button>
+        <p id="login-error" class="error hidden"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard view -->
+  <div id="dashboard-view" class="view hidden">
+    <header class="topbar">
+      <div class="brand">OhMyServer <span class="badge">Dashboard</span></div>
+      <div class="topbar-right">
+        <span id="operator-name" class="operator"></span>
+        <button id="logout-btn" class="btn ghost">Abmelden</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section class="grid status-grid">
+        <div class="card" id="card-uptime"><h3>Uptime</h3><p class="big" id="stat-uptime">–</p></div>
+        <div class="card" id="card-load"><h3>Load</h3><p class="big" id="stat-load">–</p></div>
+        <div class="card" id="card-ram"><h3>RAM</h3><p class="big" id="stat-ram">–</p></div>
+        <div class="card" id="card-disk"><h3>Disk</h3><p class="big" id="stat-disk">–</p></div>
+      </section>
+
+      <section class="card">
+        <h3>Services</h3>
+        <div id="services" class="chips"></div>
+      </section>
+
+      <section class="card">
+        <h3>Skill-Trigger</h3>
+        <div id="skill-buttons" class="chips"></div>
+        <p id="trigger-result" class="muted"></p>
+      </section>
+
+      <section class="grid two-col">
+        <div class="card">
+          <h3>Sessions</h3>
+          <div id="sessions" class="list"></div>
+        </div>
+        <div class="card">
+          <h3>Todos</h3>
+          <div id="todos" class="list"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Memory</h3>
+        <div id="memory" class="list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

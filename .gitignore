@@ -1,0 +1,23 @@
+# ---- Sensitive / Secrets: NIE einchecken ----
+.ssa/
+*.key
+*.pem
+*.env
+.env.*
+*credential*
+*vault*
+*dashboard-jwt-secret*
+*admin-credential*
+
+# ---- Node / Dashboard ----
+node_modules/
+dashboard/node_modules/
+*.log
+
+# ---- OS / Editor ----
+.DS_Store
+*.swp
+
+# ---- Backups / Temp ----
+backups/
+*.bak
